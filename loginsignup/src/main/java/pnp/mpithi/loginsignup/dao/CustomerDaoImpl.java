@@ -1,70 +1,58 @@
 package pnp.mpithi.loginsignup.dao;
 
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
 
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.hibernate4.HibernateTemplate;
+import org.springframework.stereotype.Repository;
+
+import pnp.mpithi.loginsignup.dao.CustomerDao;
 import pnp.mpithi.loginsignup.model.Customer;
 
-public class CustomerDaoImpl implements CustomerDao   {
+@Repository("customerDao")
+public class CustomerDaoImpl implements CustomerDao {
 
 	@Autowired
-	private SessionFactory sessionFactory;
+	private HibernateTemplate hibernateTemplate;
 	
-	
-	public void setSessionFactory(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
+
+	public HibernateTemplate getHibernatetemplate() {
+		return hibernateTemplate;
 	}
 
-	
-	@Override
-	public void saveCustomer(Customer customer) {
-		
-		Session session = sessionFactory.openSession();
-		Transaction transc = session.beginTransaction();
-		
-		if (customer != null){
-			try {
-				session.save(customer);
-				transc.commit();
-				session.close();
-			} catch (Exception ex){
-				transc.rollback();
-				session.close();
-				ex.printStackTrace();
-			}
-		}
-		
+	public void setHibernatetemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	@Override
-	public Customer loginCustomer(Customer customer) {
-
-		Session session = sessionFactory.openSession();
+	public boolean createCustomer(Customer customer) {
 		
-		Transaction transac = session.beginTransaction();
+		int id = (Integer)hibernateTemplate.save(customer);
 		
-		String hql = "from pnp.mpithi.loginsignup.model.Customer as c where c.email=? and c.password=?";
-		
-		try {
-			Query query = session.createQuery(hql);
-			query.setParameter(0, customer.getEmail());
-			query.setParameter(1, customer.getPassword());
-			
-			customer = (Customer)query.uniqueResult();
-			
-			transac.commit();
-			session.close();
-		} catch (Exception ex){
-			transac.rollback();
-			session.close();
-			ex.printStackTrace();
+		if (id > 0){
+			return true;
+		} else {
+			return false;
 		}
+	}
+
+	@Override
+	public Customer getCustomerDetailsByEmailAndPassword(String email, String password) {
+
+		DetachedCriteria detachedCriteria =  DetachedCriteria.forClass(Customer.class);
 		
-		return customer;			
-				
+		detachedCriteria.add(Restrictions.eq("email", email));
+		detachedCriteria.add(Restrictions.eq("password", password));
+		
+		List<Customer> findByCriteria = (List<Customer>) hibernateTemplate.findByCriteria(detachedCriteria);
+		
+		if(findByCriteria !=null && findByCriteria.size() > 0){
+			return findByCriteria.get(0);
+		} else {
+			return null;
+		}
 	}
 
 }

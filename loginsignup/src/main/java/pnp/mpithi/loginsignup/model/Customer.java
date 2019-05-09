@@ -7,73 +7,54 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
-@Table
+@Table(name = "customers")
 public class Customer {
 
 	@Id
-	@Column
-	@GeneratedValue(strategy=GenerationType.AUTO)//Generate unique ID automatically
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "custId")
 	private int custId;
 	
 	@NotEmpty
-	@Column
+	@Column(name = "first_name")
 	private String firstname;
 	
 	@NotEmpty
-	@Column
+	@Column(name = "surname")
 	private String surname;
 	
 	@NotEmpty
-	@Column
+	@Email
+	@Column(name = "email")
 	private String email;
 	
 	@NotEmpty
-	@Column
+	@Column(name = "password")
 	private String password;
 
-	// getters and setters
-	public int getCustId() {
-		return custId;
-	}
+	public int getCustId() { return custId;}
 
-	public void setCustId(int custId) {
-		this.custId = custId;
-	}
+	public void setCustId(int custId) { this.custId = custId;}
 
-	public String getFirstname() {
-		return firstname;
-	}
+	public String getFirstname() { return firstname;}
 
-	public void setFirstname(String firstname) {
-		this.firstname = firstname;
-	}
+	public void setFirstname(String firstname) { this.firstname = firstname;}
 
-	public String getSurname() {
-		return surname;
-	}
+	public String getSurname() { return surname;}
 
-	public void setSurname(String surname) {
-		this.surname = surname;
-	}
+	public void setSurname(String surname) { this.surname = surname;}
 
-	public String getEmail() {
-		return email;
-	}
+	public String getEmail() { return email;}
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+	public void setEmail(String email) { this.email = email;}
 
-	public String getPassword() {
-		return password;
-	}
+	public String getPassword() { return password;}
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+	public void setPassword(String password) { this.password = password;}
 	
 	
 	
